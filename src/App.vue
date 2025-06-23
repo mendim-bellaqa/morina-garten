@@ -1,165 +1,247 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-// Import Swiper Vue components AND modules for Navigation/Pagination
+// --- Core Libraries ---
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-
-// Import Animate on Scroll (AOS)
+import { Autoplay, EffectFade } from 'swiper/modules';
 import AOS from 'aos';
+
+// --- Styles ---
+import 'swiper/css';
+import 'swiper/css/effect-fade';
 import 'aos/dist/aos.css';
 
-// --- Reactive State ---
-const address = ref('Birkenweg 20, 9490 Vaduz');
-const swiperModules = [Autoplay, Navigation, Pagination];
+// --- DYNAMIC ASSET INGESTION ---
+const imageModules = import.meta.glob('@/assets/gallery/*.{jpg,jpeg}');
+const imagePaths = Object.keys(imageModules);
 
-// --- Component Data ---
-const heroImages = Array.from({ length: 9 }, (_, i) => `src/assets/gallery/preview-${i + 1}.jpg`);
-const galleryImages = Array.from({ length: 9 }, (_, i) => ({
-  src: `src/assets/gallery/preview-${i + 1}.jpg`,
-  alt: `Professionelle Gartenarbeit ${i + 1}`
-}));
-const services = [
-  { title: 'Gartenunterhalt', description: 'Professionelle Pflege von Rasen, Hecken, Beeten und Bäumen für eine ganzjährig prächtige Grünanlage.', icon: '<svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688zM12 11v5m0 0l-2-2m2 2l2-2"></path></svg>' },
-  { title: 'Hauswartung', description: 'Umfassende Betreuung Ihrer Immobilie, von kleinen Reparaturen bis zur Überwachung der Haustechnik.', icon: '<svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>' },
-  { title: 'Innenreinigung', description: 'Gründliche und zuverlässige Reinigung Ihrer Wohn- und Arbeitsräume für ein makelloses und hygienisches Zuhause.', icon: '<svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"></path></svg>' }
+// --- Reactive State & Data ---
+const address = ref('Heiligkreuz 34, 9490 Vaduz, Liechtenstein');
+const swiperModules = [Autoplay, EffectFade];
+const heroContainer = ref(null);
+const parallax = ref({ rotateX: 0, rotateY: 0, bgPosX: '50%', bgPosY: '50%' });
+
+const heroHeadline = "Natur. Präzision. Perfektion.";
+const heroHeadlineWords = computed(() => heroHeadline.split(' '));
+
+const heroImages = ref(imagePaths);
+const galleryImages = computed(() => imagePaths.map(path => ({ src: path, alt: 'Professionelle Gartenarbeit' })));
+
+const leistungen = [
+  { title: 'Gartenunterhalt', description: 'Professionelle Pflege von Rasen, Hecken, Beeten und Bäumen für eine ganzjährig prächtige Grünanlage.', type: 'garten' },
+  { title: 'Hauswartung', description: 'Umfassende Betreuung Ihrer Immobilie, von kleinen Reparaturen bis zur Überwachung der Haustechnik.', type: 'haus' },
+  { title: 'Innenreinigung', description: 'Gründliche und zuverlässige Reinigung Ihrer Wohn- und Arbeitsräume für ein makelloses und hygienisches Zuhause.', type: 'reinigung' }
 ];
+
+// --- 3D Parallax Mouse Handler ---
+const handleMouseMove = (event) => {
+  if (!heroContainer.value) return;
+  const { clientX, clientY } = event;
+  const { offsetWidth, offsetHeight } = heroContainer.value;
+  const x = (clientX - offsetWidth / 2) / offsetWidth;
+  const y = (clientY - offsetHeight / 2) / offsetHeight;
+  
+  // Max rotation in degrees
+  const maxRotate = 8;
+  
+  parallax.value = {
+    rotateX: -y * maxRotate,
+    rotateY: x * maxRotate,
+    bgPosX: (50 + x * 5) + '%', // Move background slightly
+    bgPosY: (50 + y * 5) + '%'
+  };
+};
 
 // --- Lifecycle Hooks ---
 onMounted(() => {
-  AOS.init({ once: true, duration: 800, easing: 'ease-in-out-cubic', offset: 50 });
+  AOS.init({ once: true, duration: 1000, easing: 'ease-out-cubic', offset: 50 });
+  window.addEventListener('mousemove', handleMouseMove);
+});
+onUnmounted(() => {
+  window.removeEventListener('mousemove', handleMouseMove);
 });
 </script>
 
 <template>
   <div>
-    <!-- HEADER -->
-    <header class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-lg shadow-2xl">
+    <header class="sticky top-0 z-50 w-full bg-gray-900/50 backdrop-blur-xl shadow-2xl border-b border-white/10">
       <div class="container mx-auto flex items-center justify-between p-4 text-white">
-        <a href="#home" class="flex items-center">
-          <img src="@/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3">
-          <span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span>
-        </a>
-        <!-- THE ONLY CHANGE IS HERE: space-x-8 is now space-x-12 -->
-        <nav class="hidden md:flex items-center space-x-12 text-sm">
-          <a href="#services" class="hover:text-green-400 m-5 transition">LEISTUNGEN</a>
-          <a href="#philosophy" class="hover:text-green-400 m-5 transition">PHILOSOPHIE</a>
-          <a href="#gallery" class="hover:text-green-400 m-5 transition">GALERIE</a>
-          <a href="#contact" class="hover:text-green-400 m-5 transition">KONTAKT</a>
+        <a href="#home" class="flex items-center"><img src="@/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3"><span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span></a>
+        <nav class="hidden md:flex items-center space-x-12 text-sm uppercase font-semibold tracking-wider">
+          <a href="#leistungen" class="hover:text-green-400 transition-colors duration-300">Leistungen</a>
+          <a href="#informationen" class="hover:text-green-400 transition-colors duration-300">Informationen</a>
+          <a href="#gallery" class="hover:text-green-400 transition-colors duration-300">Galerie</a>
+          <a href="#contact" class="hover:text-green-400 transition-colors duration-300">Kontakt</a>
         </nav>
       </div>
     </header>
 
-    <main>
-      <!-- HERO/BANNER -->
-      <section id="home" class="section-bg pt-24 pb-20">
-        <div class="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center px-4">
-          <div data-aos="fade-right" class="text-center lg:text-left">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-              Natur. <br> Präzision. <br> <span class="text-glow-green">Perfektion.</span>
+    <div class="relative">
+      <!-- HERO SECTION: 3D Kinetic Glass Environment -->
+      <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black" style="perspective: 1000px;">
+        <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
+          <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
+            <div class="w-full h-full bg-cover transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})`, backgroundPosition: `${parallax.bgPosX} ${parallax.bgPosY}` }"></div>
+          </swiper-slide>
+        </swiper>
+
+        <div class="aurora-container">
+          <div class="aurora-blob one"></div>
+          <div class="aurora-blob two"></div>
+          <div class="aurora-blob three"></div>
+        </div>
+        
+        <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
+          <div class="kinetic-glass-panel text-center text-white p-8 md:p-14" :style="{ transform: `rotateX(${parallax.rotateX}deg) rotateY(${parallax.rotateY}deg)` }">
+            <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy">
+              <span v-for="(word, index) in heroHeadlineWords" :key="index" class="inline-block" data-aos="fade-up" :data-aos-delay="200 + index * 150">{{ word }} </span>
             </h1>
-            <p class="mt-6 text-xl text-gray-300 max-w-lg mx-auto lg:mx-0">
+            <p class="mt-6 text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">
               Ihr Experte für eine makellose und gepflegte Umgebung in Vaduz und Umgebung.
             </p>
-            <div class="mt-10">
-              <a href="#contact" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
-                Jetzt Kontakt aufnehmen
-              </a>
-            </div>
-          </div>
-          <div data-aos="fade-left" class="w-full h-full">
-            <swiper
-              :modules="swiperModules"
-              :loop="true"
-              :pagination="{ clickable: true }"
-              :navigation="true"
-              :autoplay="{ delay: 4000, disableOnInteraction: false }"
-              class="rounded-2xl shadow-2xl"
-            >
-              <swiper-slide v-for="(image, index) in heroImages" :key="index">
-                <img :src="image" :alt="'Gartenansicht ' + index" class="w-full h-full object-cover aspect-video">
-              </swiper-slide>
-            </swiper>
           </div>
         </div>
+        <div class="absolute bottom-0 left-0 w-full h-1/4 z-10 bg-gradient-to-t from-gray-900 to-transparent"></div>
       </section>
 
-      <!-- SERVICES -->
-      <section id="services" class="py-20 bg-gray-900">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Unsere <span class="text-glow-green">Leistungen</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div v-for="(service, index) in services" :key="service.title" class="bg-gray-800 p-8 rounded-lg text-center card-hover" :data-aos="'fade-up'" :data-aos-delay="index * 100"><div class="bg-gray-900 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6" v-html="service.icon"></div><h3 class="text-2xl font-bold mb-4 text-white">{{ service.title }}</h3><p class="text-gray-400">{{ service.description }}</p></div>
+      <main class="relative z-30 bg-gray-900 -mt-1">
+        <section id="leistungen" class="py-20">
+          <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-16 text-white" data-aos="fade-up">Unsere <span class="text-glow-green">Leistungen</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+              <div v-for="(service, index) in leistungen" :key="service.title" class="flex flex-col items-center text-center" data-aos="fade-up" :data-aos-delay="index * 150">
+                <div class="icon-container mb-6">
+                  <!-- Garden Icon -->
+                  <svg v-if="service.type === 'garten'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/><path class="path" d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/><path class="path" d="M12 11v5m0 0l-2-2m2 2l2-2"/></svg>
+                  <!-- House Icon -->
+                  <svg v-if="service.type === 'haus'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3 12l2-2m0 0l7-7 7 7"/><path class="path" d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                  <!-- Cleaning Icon -->
+                  <svg v-if="service.type === 'reinigung'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/></svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-white">{{ service.title }}</h3>
+                <p class="text-gray-400 leading-relaxed">{{ service.description }}</p>
+              </div>
             </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <!-- PHILOSOPHY -->
-      <section id="philosophy" class="py-20 section-bg">
-        <div class="container mx-auto px-4 text-center" data-aos="fade-in" data-aos-duration="1000">
-            <h2 class="text-4xl font-bold text-center mb-4 text-white">Unsere <span class="text-glow-yellow">Philosophie</span></h2>
-            <p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"WIR PFLEGEN IHR HAUS, IHREN GARTEN, DIE INNENREINIGUNG IHRES ZUHAUSE UND IHRE UMWELT. WÄHLEN SIE UNS, WENN SIE EINE SAUBERE UMGEBUNG WOLLEN."</p>
-        </div>
-      </section>
+        <section id="informationen" class="py-20 section-bg">
+          <div class="container mx-auto px-4 text-center" data-aos="fade-in">
+              <h2 class="text-4xl font-bold text-center mb-4 text-white">Unsere <span class="text-glow-yellow">Philosophie</span></h2>
+              <p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"WIR PFLEGEN IHR HAUS, IHREN GARTEN, DIE INNENREINIGUNG IHRES ZUHAUSE UND IHRE UMWELT. WÄHLEN SIE UNS, WENN SIE EINE SAUBERE UMGEBUNG WOLLEN."</p>
+          </div>
+        </section>
 
-      <!-- GALLERY -->
-      <section id="gallery" class="py-20 bg-gray-900">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div v-for="(image, index) in galleryImages" :key="index" class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg" :data-aos="'zoom-in-up'" :data-aos-delay="(index % 3) * 100"><img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110"></div>
+        <section id="gallery" class="py-20 bg-gray-900">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div v-for="(image, index) in galleryImages" :key="`gallery-${index}`" class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg" :data-aos="'zoom-in-up'" :data-aos-delay="(index % 3) * 100"><img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110"></div>
+                </div>
             </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- CONTACT -->
-      <section id="contact" class="py-20 section-bg">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Kontaktieren Sie <span class="text-glow-yellow">Uns</span></h2>
-            <div class="flex flex-wrap -mx-4">
-                <div class="w-full lg:w-1/2 px-4 mb-8 lg:mb-0" data-aos="fade-right"><div class="h-96 rounded-lg overflow-hidden shadow-2xl"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2726.938162235315!2d9.516949315598918!3d47.14152497915668!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479b31174af97299%3A0x6b7b7a698a69a239!2sBirkenweg%2020%2C%209490%20Vaduz%2C%2C%20Liechtenstein!5e0!3m2!1sen!2sus!4v1678886452131!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>
-                <div class="w-full lg:w-1/2 px-4 flex items-center" data-aos="fade-left"><div class="bg-gray-800 p-8 rounded-lg w-full"><h3 class="text-2xl font-bold mb-4 text-white">Morina Gartenunterhalt</h3><p class="text-gray-400 mb-4">Bereit, Ihre Umgebung zu verwandeln? Wir sind für Sie da.</p><div class="space-y-4"><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-lg">{{ address }}</span></div><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><a href="mailto:info@morina-garten.li" class="text-lg hover:text-green-400 transition">info@morina-garten.li</a></div><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg><a href="tel:+4231234567" class="text-lg hover:text-green-400 transition">+423 123 45 67</a></div></div></div></div>
-            </div>
-        </div>
-      </section>
-    </main>
+        <section id="contact" class="py-20 section-bg">
+          <div class="container mx-auto px-4">
+              <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Kontaktieren Sie <span class="text-glow-yellow">Uns</span></h2>
+              <div class="flex flex-wrap -mx-4">
+                  <div class="w-full lg:w-1/2 px-4 mb-8 lg:mb-0" data-aos="fade-right"><div class="h-96 rounded-lg overflow-hidden shadow-2xl"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2726.883191316527!2d9.529851176883256!3d47.14259891823126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479b31179a6339a7%3A0x6a22f3d64a0349b1!2sHeiligkreuz%2034%2C%209490%20Vaduz%2C%20Liechtenstein!5e0!3m2!1sen!2sus!4v1687579979357!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>
+                  <div class="w-full lg:w-1/2 px-4 flex items-center" data-aos="fade-left"><div class="bg-gray-800 p-8 rounded-lg w-full"><h3 class="text-2xl font-bold mb-4 text-white">Morina Gartenunterhalt</h3><p class="text-gray-400 mb-4">Bereit, Ihre Umgebung zu verwandeln? Wir sind für Sie da.</p><div class="space-y-4"><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-lg">{{ address }}</span></div><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><a href="mailto:morina.gartenpflege@gmail.com" class="text-lg hover:text-green-400 transition">morina.gartenpflege@gmail.com</a></div><div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg><a href="tel:+41789262407" class="text-lg hover:text-green-400 transition">+41 78 926 24 07</a></div></div></div></div>
+              </div>
+          </div>
+        </section>
+      </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 border-t-2 border-green-500">
-        <div class="container mx-auto py-4 px-5 text-center text-gray-400">
-            <p>© {{ new Date().getFullYear() }} Morina Gartenunterhalt. Alle Rechte vorbehalten.</p>
-            <p class="text-sm">{{ address }}</p>
-        </div>
-    </footer>
+      <footer class="bg-gray-900 border-t-2 border-green-500 relative z-30">
+          <div class="container mx-auto py-4 px-5 text-center text-gray-400">
+              <p>© {{ new Date().getFullYear() }} Morina Gartenunterhalt. Alle Rechte vorbehalten.</p>
+              <p class="text-sm">{{ address }}</p>
+          </div>
+      </footer>
+    </div>
   </div>
 </template>
 
 <style>
-/* Scoped styles for customizing Swiper arrows and bullets */
-.swiper-button-next,
-.swiper-button-prev {
-  color: #fff; /* White arrows */
-  background-color: rgba(0, 0, 0, 0.3);
-  width: 44px;
-  height: 44px;
-  border-radius: 100%;
+/* --- KINETIC & AURORA UI STYLES --- */
+
+/* Kinetic Glass Panel */
+.kinetic-glass-panel {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
 }
-.swiper-button-next:after,
-.swiper-button-prev:after {
-  font-size: 1.25rem; /* Smaller arrow icons */
-  font-weight: 800;
+
+/* Generative Aurora Background */
+.aurora-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  filter: blur(100px) saturate(1.5);
 }
-.swiper-pagination-bullet {
-  background: #fff;
-  opacity: 0.7;
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0.3;
 }
-.swiper-pagination-bullet-active {
-  background: #2ecc71; /* Green active bullet */
-  opacity: 1;
+.aurora-blob.one {
+  width: 500px; height: 500px;
+  background-color: #2ecc71;
+  animation: move-one 20s infinite alternate;
+}
+.aurora-blob.two {
+  width: 400px; height: 400px;
+  background-color: #3498db;
+  animation: move-two 25s infinite alternate;
+}
+.aurora-blob.three {
+  width: 300px; height: 300px;
+  background-color: #f1c40f;
+  animation: move-three 15s infinite alternate;
+}
+@keyframes move-one {
+  0% { transform: translate(10vw, -20vh) scale(1); }
+  100% { transform: translate(-30vw, 40vh) scale(1.5); }
+}
+@keyframes move-two {
+  0% { transform: translate(-20vw, -10vh) scale(0.8); }
+  100% { transform: translate(40vw, -30vh) scale(1.2); }
+}
+@keyframes move-three {
+  0% { transform: translate(30vw, 30vh) scale(1.2); }
+  100% { transform: translate(0vw, 0vh) scale(0.9); }
+}
+
+/* Text & Glow Styles */
+.text-shadow-heavy { text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6); }
+.text-glow-green-strong { text-shadow: 0 0 20px #2ecc71, 0 0 30px #2ecc71, 0 0 40px rgba(46, 204, 113, 0.7); }
+
+/* Animated SVG Icon Drawing */
+.animated-icon .path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+.aos-animate .animated-icon .path {
+  animation: draw-path 2s ease-in-out forwards;
+}
+@keyframes draw-path {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Staggered Text Reveal Animation */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+[data-aos="fade-up"] {
+  animation-name: fade-up;
+  animation-fill-mode: backwards;
 }
 </style>
