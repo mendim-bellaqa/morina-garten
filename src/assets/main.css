@@ -1,0 +1,46 @@
+/* Purged and Corrected CSS */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles to augment Tailwind */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  @apply leading-normal tracking-normal;
+}
+
+/* Custom properties */
+:root {
+  --color-primary-green: #2ecc71;
+  --color-primary-yellow: #f1c40f;
+  --color-dark-bg: #1f2937;
+}
+
+/* Re-applying component-like classes here for global scope */
+.text-glow-green {
+  text-shadow: 0 0 8px var(--color-primary-green), 0 0 10px var(--color-primary-green);
+}
+
+.text-glow-yellow {
+  text-shadow: 0 0 8px var(--color-primary-yellow), 0 0 10px var(--color-primary-yellow);
+}
+
+.section-bg {
+  background-color: var(--color-dark-bg);
+}
+
+.card-hover {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
