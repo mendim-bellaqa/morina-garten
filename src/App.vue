@@ -19,14 +19,11 @@ const address = ref('Birkenweg 20, 9490 Vaduz');
 const swiperModules = [Autoplay, Navigation, Pagination];
 
 // --- Component Data ---
-// Using all 9 images for a more dynamic hero banner
 const heroImages = Array.from({ length: 9 }, (_, i) => `src/assets/gallery/preview-${i + 1}.jpg`);
-
 const galleryImages = Array.from({ length: 9 }, (_, i) => ({
   src: `src/assets/gallery/preview-${i + 1}.jpg`,
   alt: `Professionelle Gartenarbeit ${i + 1}`
 }));
-
 const services = [
   { title: 'Gartenunterhalt', description: 'Professionelle Pflege von Rasen, Hecken, Beeten und Bäumen für eine ganzjährig prächtige Grünanlage.', icon: '<svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688zM12 11v5m0 0l-2-2m2 2l2-2"></path></svg>' },
   { title: 'Hauswartung', description: 'Umfassende Betreuung Ihrer Immobilie, von kleinen Reparaturen bis zur Überwachung der Haustechnik.', icon: '<svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>' },
@@ -41,27 +38,27 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- NEW HEADER DESIGN: Glassmorphism, Sticky -->
+    <!-- HEADER -->
     <header class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-lg shadow-2xl">
       <div class="container mx-auto flex items-center justify-between p-4 text-white">
         <a href="#home" class="flex items-center">
           <img src="@/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3">
           <span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span>
         </a>
-        <nav class="hidden md:flex items-center space-x-8 text-sm">
-          <a href="#services" class="hover:text-green-400 transition">LEISTUNGEN</a>
-          <a href="#philosophy" class="hover:text-green-400 transition">PHILOSOPHIE</a>
-          <a href="#gallery" class="hover:text-green-400 transition">GALERIE</a>
-          <a href="#contact" class="hover:text-green-400 transition">KONTAKT</a>
+        <!-- THE ONLY CHANGE IS HERE: space-x-8 is now space-x-12 -->
+        <nav class="hidden md:flex items-center space-x-12 text-sm">
+          <a href="#services" class="hover:text-green-400 m-5 transition">LEISTUNGEN</a>
+          <a href="#philosophy" class="hover:text-green-400 m-5 transition">PHILOSOPHIE</a>
+          <a href="#gallery" class="hover:text-green-400 m-5 transition">GALERIE</a>
+          <a href="#contact" class="hover:text-green-400 m-5 transition">KONTAKT</a>
         </nav>
       </div>
     </header>
 
     <main>
-      <!-- NEW HERO/BANNER DESIGN: Two-column layout -->
+      <!-- HERO/BANNER -->
       <section id="home" class="section-bg pt-24 pb-20">
         <div class="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center px-4">
-          <!-- Left Column: Text Content -->
           <div data-aos="fade-right" class="text-center lg:text-left">
             <h1 class="text-5xl md:text-6xl font-extrabold text-white leading-tight">
               Natur. <br> Präzision. <br> <span class="text-glow-green">Perfektion.</span>
@@ -75,8 +72,6 @@ onMounted(() => {
               </a>
             </div>
           </div>
-
-          <!-- Right Column: Swiper Carousel -->
           <div data-aos="fade-left" class="w-full h-full">
             <swiper
               :modules="swiperModules"
@@ -94,7 +89,7 @@ onMounted(() => {
         </div>
       </section>
 
-      <!-- All other sections remain structurally sound and require no changes -->
+      <!-- SERVICES -->
       <section id="services" class="py-20 bg-gray-900">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Unsere <span class="text-glow-green">Leistungen</span></h2>
@@ -104,6 +99,7 @@ onMounted(() => {
         </div>
       </section>
 
+      <!-- PHILOSOPHY -->
       <section id="philosophy" class="py-20 section-bg">
         <div class="container mx-auto px-4 text-center" data-aos="fade-in" data-aos-duration="1000">
             <h2 class="text-4xl font-bold text-center mb-4 text-white">Unsere <span class="text-glow-yellow">Philosophie</span></h2>
@@ -111,6 +107,7 @@ onMounted(() => {
         </div>
       </section>
 
+      <!-- GALLERY -->
       <section id="gallery" class="py-20 bg-gray-900">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
@@ -120,6 +117,7 @@ onMounted(() => {
         </div>
       </section>
 
+      <!-- CONTACT -->
       <section id="contact" class="py-20 section-bg">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Kontaktieren Sie <span class="text-glow-yellow">Uns</span></h2>
@@ -131,6 +129,7 @@ onMounted(() => {
       </section>
     </main>
 
+    <!-- FOOTER -->
     <footer class="bg-gray-900 border-t-2 border-green-500">
         <div class="container mx-auto py-4 px-5 text-center text-gray-400">
             <p>© {{ new Date().getFullYear() }} Morina Gartenunterhalt. Alle Rechte vorbehalten.</p>
