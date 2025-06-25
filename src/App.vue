@@ -1,5 +1,6 @@
+<!-- C:\laragon\www\morina-garten\src\App.vue -->
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 
 // --- Core Libraries ---
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -10,22 +11,34 @@ import AOS from 'aos';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'aos/dist/aos.css';
+import './assets/main.css';
 
 // --- DYNAMIC ASSET INGESTION ---
-const imageModules = import.meta.glob('@/assets/gallery/*.{jpg,jpeg}');
-const imagePaths = Object.keys(imageModules);
+const galleryImageModules = import.meta.glob('@/assets/gallery/*.{jpg,jpeg}');
+const galleryImagePaths = Object.keys(galleryImageModules);
+
+const teamImageModules = import.meta.glob('@/assets/team/*.{jpg,jpeg}');
+const teamImagePaths = Object.keys(teamImageModules);
+
+const findImage = (paths, name) => paths.find(p => p.includes(`/${name}.`)) || '';
 
 // --- Reactive State & Data ---
 const address = ref('Heiligkreuz 34, 9490 Vaduz, Liechtenstein');
 const swiperModules = [Autoplay, EffectFade];
 const heroContainer = ref(null);
 const parallax = ref({ rotateX: 0, rotateY: 0, bgPosX: '50%', bgPosY: '50%' });
+const isMobileMenuOpen = ref(false);
+const isScrolledPastHero = ref(false);
+
+// Gallery state
+const isGalleryOpen = ref(false);
+const activeImageIndex = ref(0);
 
 const heroHeadline = "Natur. Präzision. Perfektion.";
 const heroHeadlineWords = computed(() => heroHeadline.split(' '));
 
-const heroImages = ref(imagePaths);
-const galleryImages = computed(() => imagePaths.map(path => ({ src: path, alt: 'Professionelle Gartenarbeit' })));
+const heroImages = ref(galleryImagePaths);
+const galleryImages = computed(() => galleryImagePaths.map(path => ({ src: path, alt: 'Professionelle Gartenarbeit' })));
 
 const leistungen = [
   { title: 'Gartenunterhalt', description: 'Professionelle Pflege von Rasen, Hecken, Beeten und Bäumen für eine ganzjährig prächtige Grünanlage.', type: 'garten' },
@@ -33,64 +46,134 @@ const leistungen = [
   { title: 'Innenreinigung', description: 'Gründliche und zuverlässige Reinigung Ihrer Wohn- und Arbeitsräume für ein makelloses und hygienisches Zuhause.', type: 'reinigung' }
 ];
 
-// --- 3D Parallax Mouse Handler ---
+const teamMembers = [
+    { name: 'Morina Jeton', role: 'Inhaber & Geschäftsführer', imageSrc: findImage(teamImagePaths, '1') },
+    { name: 'Kriss', role: 'Spezialist für Gartenunterhalt', imageSrc: findImage(teamImagePaths, '2') },
+    { name: 'Morina Shkurta', role: 'Expertin für Hauswartungen', imageSrc: findImage(teamImagePaths, '3') },
+];
+
+// --- Gallery Functions ---
+const openGallery = (index) => {
+  activeImageIndex.value = index;
+  isGalleryOpen.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+const closeGallery = () => {
+  isGalleryOpen.value = false;
+  document.body.style.overflow = '';
+};
+
+const nextImage = () => {
+  activeImageIndex.value = (activeImageIndex.value + 1) % galleryImages.value.length;
+};
+
+const prevImage = () => {
+  activeImageIndex.value = (activeImageIndex.value - 1 + galleryImages.value.length) % galleryImages.value.length;
+};
+
+// --- Handlers ---
 const handleMouseMove = (event) => {
   if (!heroContainer.value) return;
   const { clientX, clientY } = event;
   const { offsetWidth, offsetHeight } = heroContainer.value;
   const x = (clientX - offsetWidth / 2) / offsetWidth;
   const y = (clientY - offsetHeight / 2) / offsetHeight;
-  
-  // Max rotation in degrees
   const maxRotate = 8;
-  
   parallax.value = {
     rotateX: -y * maxRotate,
     rotateY: x * maxRotate,
-    bgPosX: (50 + x * 5) + '%', // Move background slightly
+    bgPosX: (50 + x * 5) + '%',
     bgPosY: (50 + y * 5) + '%'
   };
 };
 
-// --- Lifecycle Hooks ---
+const handleScroll = () => {
+  isScrolledPastHero.value = window.scrollY > 50; 
+};
+
+watch(isMobileMenuOpen, (newVal) => {
+  document.body.style.overflow = newVal ? 'hidden' : '';
+});
+
+// --- Lifecycle ---
 onMounted(() => {
   AOS.init({ once: true, duration: 1000, easing: 'ease-out-cubic', offset: 50 });
   window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (isGalleryOpen.value) {
+      if (e.key === 'Escape') closeGallery();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+    }
+  });
 });
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
 <template>
   <div>
-    <header class="sticky top-0 z-50 w-full bg-gray-900/50 backdrop-blur-xl shadow-2xl border-b border-white/10">
+    <!-- HEADER -->
+    <header 
+      class="sticky top-0 z-50 w-full backdrop-blur-xl transition-colors duration-300 ease-in-out"
+      :class="{
+        'bg-transparent': !isScrolledPastHero,
+        'bg-black shadow-2xl border-b border-gray-800': isScrolledPastHero
+      }"
+    >
       <div class="container mx-auto flex items-center justify-between p-4 text-white">
         <a href="#home" class="flex items-center"><img src="@/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3"><span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span></a>
-        <nav class="hidden md:flex items-center space-x-12 text-sm uppercase font-semibold tracking-wider">
-          <a href="#leistungen" class="hover:text-green-400 transition-colors duration-300">Leistungen</a>
-          <a href="#informationen" class="hover:text-green-400 transition-colors duration-300">Informationen</a>
-          <a href="#gallery" class="hover:text-green-400 transition-colors duration-300">Galerie</a>
-          <a href="#contact" class="hover:text-green-400 transition-colors duration-300">Kontakt</a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center space-x-10 text-sm uppercase font-semibold tracking-wider">
+          <a href="#leistungen" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Leistungen</a>
+          <a href="#informationen" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Informationen</a>
+          <a href="#team" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Unser Team</a>
+          <a href="#gallery" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Galerie</a>
+          <a href="#contact" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Kontakt</a>
         </nav>
+
+        <div class="md:hidden">
+          <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="z-50 focus:outline-none">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
 
+    <!-- Mobile Navigation Menu -->
+    <transition name="mobile-menu-fade">
+      <div v-if="isMobileMenuOpen" class="fixed inset-0 z-40 bg-black flex flex-col items-center justify-center">
+        <nav class="flex flex-col items-center text-center space-y-8">
+          <a @click="isMobileMenuOpen = false" href="#leistungen" class="text-2xl font-bold uppercase tracking-wider text-white px-5 py-2 hover:bg-gray-800/50 rounded-lg">Leistungen</a>
+          <a @click="isMobileMenuOpen = false" href="#informationen" class="text-2xl font-bold uppercase tracking-wider text-white px-5 py-2 hover:bg-gray-800/50 rounded-lg">Informationen</a>
+          <a @click="isMobileMenuOpen = false" href="#team" class="text-2xl font-bold uppercase tracking-wider text-white px-5 py-2 hover:bg-gray-800/50 rounded-lg">Unser Team</a>
+          <a @click="isMobileMenuOpen = false" href="#gallery" class="text-2xl font-bold uppercase tracking-wider text-white px-5 py-2 hover:bg-gray-800/50 rounded-lg">Galerie</a>
+          <a @click="isMobileMenuOpen = false" href="#contact" class="text-2xl font-bold uppercase tracking-wider text-white px-5 py-2 hover:bg-gray-800/50 rounded-lg">Kontakt</a>
+        </nav>
+      </div>
+    </transition>
+
     <div class="relative">
-      <!-- HERO SECTION: 3D Kinetic Glass Environment -->
+      <!-- HERO SECTION -->
       <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black" style="perspective: 1000px;">
         <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
           <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
             <div class="w-full h-full bg-cover transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})`, backgroundPosition: `${parallax.bgPosX} ${parallax.bgPosY}` }"></div>
           </swiper-slide>
         </swiper>
-
         <div class="aurora-container">
           <div class="aurora-blob one"></div>
           <div class="aurora-blob two"></div>
           <div class="aurora-blob three"></div>
         </div>
-        
         <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
           <div class="kinetic-glass-panel text-center text-white p-8 md:p-14" :style="{ transform: `rotateX(${parallax.rotateX}deg) rotateY(${parallax.rotateY}deg)` }">
             <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy">
@@ -111,15 +194,11 @@ onUnmounted(() => {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
               <div v-for="(service, index) in leistungen" :key="service.title" class="flex flex-col items-center text-center" data-aos="fade-up" :data-aos-delay="index * 150">
                 <div class="icon-container mb-6">
-                  <!-- Garden Icon -->
                   <svg v-if="service.type === 'garten'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/><path class="path" d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/><path class="path" d="M12 11v5m0 0l-2-2m2 2l2-2"/></svg>
-                  <!-- House Icon -->
                   <svg v-if="service.type === 'haus'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3 12l2-2m0 0l7-7 7 7"/><path class="path" d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                  <!-- Cleaning Icon -->
                   <svg v-if="service.type === 'reinigung'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/></svg>
                 </div>
-                <h3 class="text-2xl font-bold mb-3 text-white">{{ service.title }}</h3>
-                <p class="text-gray-400 leading-relaxed">{{ service.description }}</p>
+                <h3 class="text-2xl font-bold mb-3 text-white">{{ service.title }}</h3><p class="text-gray-400 leading-relaxed">{{ service.description }}</p>
               </div>
             </div>
           </div>
@@ -132,16 +211,114 @@ onUnmounted(() => {
           </div>
         </section>
 
-        <section id="gallery" class="py-20 bg-gray-900">
+        <section id="team" class="py-20 bg-gray-900">
             <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="(image, index) in galleryImages" :key="`gallery-${index}`" class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg" :data-aos="'zoom-in-up'" :data-aos-delay="(index % 3) * 100"><img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110"></div>
+                <h2 class="text-4xl font-bold text-center mb-16 text-white" data-aos="fade-up">Unser <span class="text-glow-green">Team</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div v-for="(member, index) in teamMembers" :key="member.name"
+                        class="team-card-border p-px rounded-2xl"
+                        data-aos="fade-up" :data-aos-delay="100 + index * 150">
+                        <div class="bg-gray-800/60 backdrop-blur-md rounded-2xl p-6 text-center h-full flex flex-col">
+                            <div class="mb-4 relative">
+                                <img :src="member.imageSrc" :alt="member.name" class="w-32 h-32 rounded-full mx-auto object-cover ring-2 ring-white/10">
+                                <div class="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-green-400 transition-all"></div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">{{ member.name }}</h3>
+                            <p class="text-green-400 font-semibold mt-1">{{ member.role }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="py-20 section-bg">
+        <section id="gallery" class="py-20 section-bg">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div v-for="(image, index) in galleryImages" 
+                         :key="`gallery-${index}`" 
+                         class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg gallery-item" 
+                         :data-aos="'zoom-in-up'" 
+                         :data-aos-delay="(index % 3) * 100"
+                         @click="openGallery(index)">
+                        <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Lightbox -->
+        <transition name="gallery-fade">
+          <div v-if="isGalleryOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" @click="closeGallery"></div>
+            
+            <div class="relative z-10 w-full max-w-6xl h-full max-h-[90vh] flex items-center">
+              <!-- Prev Button -->
+              <button 
+                @click.stop="prevImage" 
+                class="absolute left-4 z-20 bg-black/30 hover:bg-black/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 group"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white group-hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <!-- Main Image -->
+              <div class="w-full h-full flex items-center justify-center">
+                <div class="gallery-glass-container transform-gpu">
+                  <img 
+                    :src="galleryImages[activeImageIndex].src" 
+                    :alt="'Bild ' + (activeImageIndex + 1)" 
+                    class="gallery-main-image max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl"
+                  />
+                </div>
+              </div>
+              
+              <!-- Next Button -->
+              <button 
+                @click.stop="nextImage" 
+                class="absolute right-4 z-20 bg-black/30 hover:bg-black/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 group"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white group-hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              
+              <!-- Close Button -->
+              <button 
+                @click="closeGallery" 
+                class="absolute top-4 right-4 z-20 bg-black/30 hover:bg-red-500 backdrop-blur-sm p-3 rounded-full transition-all duration-300"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <!-- Thumbnails -->
+              <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
+                <div 
+                  v-for="(image, index) in galleryImages" 
+                  :key="`thumb-${index}`"
+                  @click.stop="activeImageIndex = index"
+                  class="w-16 h-16 cursor-pointer rounded-lg overflow-hidden transition-all duration-300 transform"
+                  :class="{
+                    'ring-4 ring-green-500 scale-110': index === activeImageIndex,
+                    'opacity-70 hover:opacity-100': index !== activeImageIndex
+                  }"
+                >
+                  <img :src="image.src" :alt="'Thumbnail ' + (index + 1)" class="w-full h-full object-cover">
+                </div>
+              </div>
+              
+              <!-- Image Counter -->
+              <div class="absolute top-4 left-4 z-20 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium">
+                {{ activeImageIndex + 1 }} / {{ galleryImages.length }}
+              </div>
+            </div>
+          </div>
+        </transition>
+
+        <section id="contact" class="py-20 bg-gray-900">
           <div class="container mx-auto px-4">
               <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Kontaktieren Sie <span class="text-glow-yellow">Uns</span></h2>
               <div class="flex flex-wrap -mx-4">
@@ -161,87 +338,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<style>
-/* --- KINETIC & AURORA UI STYLES --- */
-
-/* Kinetic Glass Panel */
-.kinetic-glass-panel {
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(16px) saturate(1.5);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
-  transition: transform 0.1s ease-out;
-  transform-style: preserve-3d;
-}
-
-/* Generative Aurora Background */
-.aurora-container {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-  filter: blur(100px) saturate(1.5);
-}
-.aurora-blob {
-  position: absolute;
-  border-radius: 50%;
-  mix-blend-mode: screen;
-  opacity: 0.3;
-}
-.aurora-blob.one {
-  width: 500px; height: 500px;
-  background-color: #2ecc71;
-  animation: move-one 20s infinite alternate;
-}
-.aurora-blob.two {
-  width: 400px; height: 400px;
-  background-color: #3498db;
-  animation: move-two 25s infinite alternate;
-}
-.aurora-blob.three {
-  width: 300px; height: 300px;
-  background-color: #f1c40f;
-  animation: move-three 15s infinite alternate;
-}
-@keyframes move-one {
-  0% { transform: translate(10vw, -20vh) scale(1); }
-  100% { transform: translate(-30vw, 40vh) scale(1.5); }
-}
-@keyframes move-two {
-  0% { transform: translate(-20vw, -10vh) scale(0.8); }
-  100% { transform: translate(40vw, -30vh) scale(1.2); }
-}
-@keyframes move-three {
-  0% { transform: translate(30vw, 30vh) scale(1.2); }
-  100% { transform: translate(0vw, 0vh) scale(0.9); }
-}
-
-/* Text & Glow Styles */
-.text-shadow-heavy { text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6); }
-.text-glow-green-strong { text-shadow: 0 0 20px #2ecc71, 0 0 30px #2ecc71, 0 0 40px rgba(46, 204, 113, 0.7); }
-
-/* Animated SVG Icon Drawing */
-.animated-icon .path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-}
-.aos-animate .animated-icon .path {
-  animation: draw-path 2s ease-in-out forwards;
-}
-@keyframes draw-path {
-  to { stroke-dashoffset: 0; }
-}
-
-/* Staggered Text Reveal Animation */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-[data-aos="fade-up"] {
-  animation-name: fade-up;
-  animation-fill-mode: backwards;
-}
-</style>

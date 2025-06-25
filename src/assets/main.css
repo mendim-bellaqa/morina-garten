@@ -1,3 +1,5 @@
+/* C:\laragon\www\morina-garten\src\assets\main.css */
+/* --- DEFINITIVE STYLESHEET for Morina Gartenunterhalt --- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,22 +7,277 @@
 html {
   scroll-behavior: smooth;
 }
+
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #1a1a1a;
+  background-color: #18181b;
+  /* A slightly richer dark background */
   color: #e0e0e0;
   @apply leading-normal tracking-normal;
+  overflow-x: hidden;
 }
+
 :root {
   --color-primary-green: #2ecc71;
   --color-primary-yellow: #f1c40f;
   --color-dark-bg: #1f2937;
 }
-.text-glow-green { text-shadow: 0 0 8px var(--color-primary-green), 0 0 10px var(--color-primary-green); }
-.text-glow-yellow { text-shadow: 0 0 8px var(--color-primary-yellow), 0 0 10px var(--color-primary-yellow); }
-.section-bg { background-color: var(--color-dark-bg); }
-.card-hover { transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; }
+
+/* --- KINETIC & AURORA UI STYLES --- */
+.kinetic-glass-panel {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
+}
+
+.aurora-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  filter: blur(100px) saturate(1.5);
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0.3;
+}
+
+.aurora-blob.one {
+  width: 500px;
+  height: 500px;
+  background-color: var(--color-primary-green);
+  animation: move-one 20s infinite alternate;
+}
+
+.aurora-blob.two {
+  width: 400px;
+  height: 400px;
+  background-color: #3498db;
+  animation: move-two 25s infinite alternate;
+}
+
+.aurora-blob.three {
+  width: 300px;
+  height: 300px;
+  background-color: var(--color-primary-yellow);
+  animation: move-three 15s infinite alternate;
+}
+
+@keyframes move-one {
+  0% {
+    transform: translate(10vw, -20vh) scale(1);
+  }
+
+  100% {
+    transform: translate(-30vw, 40vh) scale(1.5);
+  }
+}
+
+@keyframes move-two {
+  0% {
+    transform: translate(-20vw, -10vh) scale(0.8);
+  }
+
+  100% {
+    transform: translate(40vw, -30vh) scale(1.2);
+  }
+}
+
+@keyframes move-three {
+  0% {
+    transform: translate(30vw, 30vh) scale(1.2);
+  }
+
+  100% {
+    transform: translate(0vw, 0vh) scale(0.9);
+  }
+}
+
+/* --- TEXT & ANIMATION STYLES --- */
+.text-shadow-heavy {
+  text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}
+
+.text-glow-green-strong {
+  text-shadow: 0 0 20px #2ecc71, 0 0 30px #2ecc71, 0 0 40px rgba(46, 204, 113, 0.7);
+}
+
+.text-glow-yellow {
+  text-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+}
+
+.animated-icon .path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+[data-aos="fade-up"] .animated-icon .path,
+.aos-animate .animated-icon .path {
+  animation: draw-path 2s ease-in-out forwards;
+}
+
+@keyframes draw-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* --- COMPONENT STYLES --- */
+.section-bg {
+  background-color: var(--color-dark-bg);
+}
+
+.card-hover {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
 .card-hover:hover {
   transform: translateY(-10px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* --- MOBILE MENU TRANSITIONS --- */
+.mobile-menu-fade-enter-active,
+.mobile-menu-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-fade-enter-from,
+.mobile-menu-fade-leave-to {
+  opacity: 0;
+}
+
+/* --- TEAM CARD STYLES --- */
+.team-card-border {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.team-card-border:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* --- GALLERY STYLES --- */
+.gallery-item {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.gallery-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(46, 204, 113, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 0.5rem;
+}
+
+.gallery-item:hover::after {
+  opacity: 1;
+}
+
+.gallery-glass-container {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 50px rgba(46, 204, 113, 0.2),
+    0 0 100px rgba(46, 204, 113, 0.1);
+  padding: 1rem;
+  transform: translateZ(0);
+}
+
+.gallery-main-image {
+  transform: translateZ(0);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Gallery Transitions */
+.gallery-fade-enter-active,
+.gallery-fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+.gallery-fade-enter-from,
+.gallery-fade-leave-to {
+  opacity: 0;
+}
+
+.gallery-fade-enter-from .gallery-glass-container,
+.gallery-fade-leave-to .gallery-glass-container {
+  transform: scale(0.8) rotateY(10deg);
+}
+
+/* Menu item spacing */
+header nav a {
+  letter-spacing: 1.5px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Add hover effect */
+header nav a:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 2px 10px rgba(46, 204, 113, 0.4);
+}
+
+/* Mobile menu spacing */
+.mobile-menu-fade-enter-active nav a,
+.mobile-menu-fade-leave-active nav a {
+  margin: 12px 0;
+}
+
+/* Thumbnail styling */
+.thumbnail-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 15px;
+}
+
+.thumbnail-item {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.thumbnail-item:hover,
+.thumbnail-item.active {
+  opacity: 1;
+  border-color: #2ecc71;
+}
+
+.thumbnail-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
