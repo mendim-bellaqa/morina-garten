@@ -156,7 +156,7 @@ onUnmounted(() => {
         <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
           <div class="kinetic-glass-panel text-center text-white p-8 md:p-14" :style="{ transform: `rotateX(${parallax.rotateX}deg) rotateY(${parallax.rotateY}deg)` }">
             <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy"><span v-for="(word, index) in heroHeadlineWords" :key="index" class="inline-block" data-aos="fade-up" :data-aos-delay="200 + index * 150">{{ word }} </span></h1>
-            <p class="mt-6 text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">Ihr Experte für eine makellose und gepflegte Umgebung in Vaduz und Umgebung.</p>
+            <p class="mt-6 text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.</p>
           </div>
         </div>
         <div class="absolute bottom-0 left-0 w-full h-1/4 z-10 bg-gradient-to-t from-gray-900 to-transparent"></div>
