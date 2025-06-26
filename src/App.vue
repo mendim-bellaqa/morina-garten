@@ -1,28 +1,35 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-
-// --- Core Libraries ---
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Autoplay, EffectFade } from 'swiper/modules';
 import AOS from 'aos';
-
-// --- Styles ---
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'aos/dist/aos.css';
-// Do NOT import main.css here. It is handled by main.js.
 
-// --- DYNAMIC ASSET INGESTION & PRODUCTION FIX ---
-const galleryImageModules = import.meta.glob('@/assets/gallery/*.{jpg,jpeg}');
-const teamImageModules = import.meta.glob('@/assets/team/*.{jpg,jpeg}');
+// --- ABSOLUTE PATHING - THE FINAL FIX ---
+// We now define the paths directly as they will appear in the deployed site.
+// Vite automatically serves the `public` directory at the root.
 
-// THIS IS THE CRITICAL FIX: This function correctly resolves asset URLs for both dev and prod.
-function getImageUrl(path) {
-  if (!path) return '';
-  return new URL(path, import.meta.url).href;
-}
+// Total number of images you have in the gallery folder.
+// CHANGE THIS NUMBER if you add or remove gallery images.
+const totalGalleryImages = 23; 
 
-const findImagePath = (modules, name) => Object.keys(modules).find(p => p.includes(`/${name}.`)) || '';
+const galleryImagePaths = Array.from({ length: totalGalleryImages }, (_, i) => {
+    // Note: Assuming a mix of .jpg and .jpeg might not work this way.
+    // It's better to be consistent with file extensions. This code assumes .jpeg, then falls back to .jpg.
+    // A better solution is to list them if extensions are mixed. But for now, let's assume .jpeg
+    // THIS IS A SIMPLIFIED EXAMPLE. A REAL-WORLD, ROBUST SOLUTION WOULD LIST THE FILENAMES.
+    // Let's create a more robust version right here.
+    const imageFiles = [
+        'preview-1.jpg', 'preview-2.jpg', 'preview-3.jpg', 'preview-4.jpg', 'preview-5.jpg',
+        'preview-6.jpeg', 'preview-7.jpeg', 'preview-8.jpeg', 'preview-9.jpeg', 'preview-10.jpeg',
+        'preview-11.jpeg', 'preview-12.jpeg', 'preview-13.jpeg', 'preview-14.jpeg', 'preview-15.jpeg',
+        'preview-16.jpeg', 'preview-17.jpeg', 'preview-18.jpeg', 'preview-19.jpeg', 'preview-20.jpeg',
+        'preview-21.jpeg', 'preview-22.jpeg', 'preview-23.jpeg'
+    ];
+    return `/assets/gallery/${imageFiles[i]}`;
+});
 
 // --- Reactive State & Data ---
 const address = ref('Heiligkreuz 34, 9490 Vaduz, Liechtenstein');
@@ -34,14 +41,13 @@ const isScrolledPastHero = ref(false);
 const isGalleryOpen = ref(false);
 const activeImageIndex = ref(0);
 
-// Process the paths to get final URLs
-const heroImages = ref(Object.keys(galleryImageModules).map(path => getImageUrl(path)));
-const galleryImages = computed(() => Object.keys(galleryImageModules).map(path => ({ src: getImageUrl(path), alt: 'Professionelle Gartenarbeit' })));
+const heroImages = ref(galleryImagePaths);
+const galleryImages = computed(() => galleryImagePaths.map(path => ({ src: path, alt: 'Professionelle Gartenarbeit' })));
 
 const teamMembers = [
-    { name: 'Morina Jeton', role: 'Inhaber & Geschäftsführer', imageSrc: getImageUrl(findImagePath(teamImageModules, '1')) },
-    { name: 'Kriss', role: 'Spezialist für Gartenunterhalt', imageSrc: getImageUrl(findImagePath(teamImageModules, '2')) },
-    { name: 'Morina Shkurta', role: 'Expertin für Hauswartungen', imageSrc: getImageUrl(findImagePath(teamImageModules, '3')) },
+    { name: 'Morina Jeton', role: 'Inhaber & Geschäftsführer', imageSrc: '/assets/team/1.jpg' },
+    { name: 'Kriss', role: 'Spezialist für Gartenunterhalt', imageSrc: '/assets/team/2.jpg' },
+    { name: 'Morina Shkurta', role: 'Expertin für Hauswartungen', imageSrc: '/assets/team/3.jpg' },
 ];
 
 const heroHeadline = "Natur. Präzision. Perfektion.";
@@ -58,7 +64,6 @@ const openGallery = (index) => {
   activeImageIndex.value = index;
   isGalleryOpen.value = true;
 };
-
 const closeGallery = () => { isGalleryOpen.value = false; };
 const nextImage = () => { activeImageIndex.value = (activeImageIndex.value + 1) % galleryImages.value.length; };
 const prevImage = () => { activeImageIndex.value = (activeImageIndex.value - 1 + galleryImages.value.length) % galleryImages.value.length; };
@@ -89,11 +94,9 @@ const handleKeydown = (e) => {
     }
   };
 
-// Watcher to lock body scroll
 watch(isGalleryOpen, (newVal) => { document.body.style.overflow = newVal ? 'hidden' : ''; });
 watch(isMobileMenuOpen, (newVal) => { document.body.style.overflow = newVal ? 'hidden' : ''; });
 
-// --- Lifecycle ---
 onMounted(() => {
   AOS.init({ once: true, duration: 1000, easing: 'ease-out-cubic', offset: 50 });
   window.addEventListener('mousemove', handleMouseMove);
@@ -111,13 +114,11 @@ onUnmounted(() => {
   <div>
     <header 
       class="sticky top-0 z-50 w-full backdrop-blur-xl transition-colors duration-300 ease-in-out"
-      :class="{
-        'bg-transparent': !isScrolledPastHero,
-        'bg-black shadow-2xl border-b border-gray-800': isScrolledPastHero
-      }"
+      :class="{ 'bg-transparent': !isScrolledPastHero, 'bg-black shadow-2xl border-b border-gray-800': isScrolledPastHero }"
     >
       <div class="container mx-auto flex items-center justify-between p-4 text-white">
-        <a href="#home" class="flex items-center"><img src="@/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3"><span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span></a>
+        <!-- CORRECTED LOGO PATH -->
+        <a href="#home" class="flex items-center"><img src="/assets/logo/logo.png" alt="Morina Logo" class="h-10 w-auto mr-3"><span class="font-bold text-lg tracking-tight">Morina Gartenunterhalt</span></a>
         
         <nav class="hidden md:flex items-center space-x-10 text-sm uppercase font-semibold tracking-wider">
           <a href="#leistungen" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Leistungen</a>
@@ -127,9 +128,7 @@ onUnmounted(() => {
           <a href="#contact" class="hover:text-green-400 transition-colors duration-300 px-3 py-1 rounded-lg hover:bg-gray-800/50">Kontakt</a>
         </nav>
 
-        <div class="md:hidden">
-          <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="z-50 focus:outline-none"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /><path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-        </div>
+        <div class="md:hidden"><button @click="isMobileMenuOpen = !isMobileMenuOpen" class="z-50 focus:outline-none"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /><path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>
       </div>
     </header>
 
