@@ -20,16 +20,55 @@ body {
   --color-dark-bg: #1f2937;
 }
 
+/* --- CUSTOM SCROLLBAR --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2ecc71;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #27ae60;
+}
+
+/* --- GLASSY BUTTONS --- */
+.btn-primary {
+  @apply text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300;
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+  background: rgba(46, 204, 113, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* --- SECTION TITLE --- */
+.section-title {
+  @apply text-4xl font-bold text-center mb-16;
+  color: white;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
 /* --- KINETIC & AURORA UI STYLES --- */
 .kinetic-glass-panel {
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(16px) saturate(1.5);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
-  transition: transform 0.1s ease-out;
-  transform-style: preserve-3d;
+  position: relative;
+  border-radius: 2rem;
+  background: rgba(30, 41, 59, 0.45);
+  box-shadow: 0 8px 40px 0 rgba(46,204,113,0.10), 0 1.5px 8px 0 rgba(0,0,0,0.10);
+  backdrop-filter: blur(18px) saturate(1.7);
+  z-index: 30;
 }
 
 .aurora-container {
@@ -148,6 +187,15 @@ body {
 
 .gallery-item {
   cursor: pointer;
+  transition: transform 0.4s cubic-bezier(.25,.8,.25,1), box-shadow 0.4s cubic-bezier(.25,.8,.25,1);
+  will-change: transform;
+  perspective: 800px;
+}
+
+.gallery-item:hover {
+  transform: rotateY(8deg) scale(1.04) translateY(-8px);
+  box-shadow: 0 16px 40px rgba(46,204,113,0.15), 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2;
 }
 
 /* --- IMMERSIVE GALLERY LIGHTBOX --- */
@@ -162,20 +210,22 @@ body {
 
 .lightbox-image-wrapper {
   position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: transparent;
 }
 
 .lightbox-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 0.5rem;
+  display: block;
+  background: transparent;
 }
 
 .lightbox-image.current {
@@ -219,4 +269,55 @@ body {
 .lightbox-fade-enter-from,
 .lightbox-fade-leave-to {
   opacity: 0;
+}
+
+.glossy-border {
+  position: relative;
+  border-radius: 2rem;
+  padding: 0.25rem;
+  background: linear-gradient(120deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.7) 100%);
+  box-shadow: 0 0 32px 0 rgba(255,255,255,0.12), 0 2px 24px 0 rgba(46,204,113,0.08);
+  overflow: visible;
+}
+
+.glossy-border > .kinetic-glass-panel {
+  border-radius: 1.75rem;
+  background-clip: padding-box;
+  box-shadow: 0 4px 32px 0 rgba(46,204,113,0.10);
+}
+
+.leaf-anim-container {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.leaf-anim {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  /* Make sure the SVG is always above the border */
+  z-index: 30;
+}
+
+.diamond-border-svg {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 21;
+}
+
+.leaves-anim-svg {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 22;
 }

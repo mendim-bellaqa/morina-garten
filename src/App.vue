@@ -62,6 +62,18 @@ onMounted(() => {
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('scroll', handleScroll, { passive: true });
   window.addEventListener('keydown', handleKeydown);
+
+  const parallaxSections = document.querySelectorAll('.parallax-section');
+  const onScroll = () => {
+    parallaxSections.forEach(section => {
+      const speed = section.dataset.parallaxSpeed || 0.3;
+      const offset = window.scrollY * speed;
+      section.style.backgroundPosition = `center ${offset}px`;
+    });
+  };
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+  onUnmounted(() => window.removeEventListener('scroll', onScroll));
 });
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove);
@@ -107,26 +119,142 @@ onUnmounted(() => {
         </swiper>
         <div class="aurora-container"><div class="aurora-blob one"></div><div class="aurora-blob two"></div><div class="aurora-blob three"></div></div>
         <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
-          <div class="kinetic-glass-panel text-center text-white p-8 md:p-14 w-full max-w-4xl mx-auto" :style="{ transform: `rotateX(${parallax.rotateX}deg) rotateY(${parallax.rotateY}deg)` }">
-            <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy"><span v-for="(word, index) in heroHeadlineWords" :key="index" class="inline-block" data-aos="fade-up" :data-aos-delay="200 + index * 150">{{ word }} </span></h1>
-            <p class="mt-6 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy mx-auto" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.</p>
+          <div class="glossy-border relative">
+            <!-- Animated Leaf SVG (see below) -->
+            <div class="leaf-anim-container pointer-events-none">
+              <svg
+                class="leaf-anim"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  id="borderPath"
+                  d="M10,10 H90 V90 H10 Z"
+                  fill="none"
+                />
+                <g>
+                  <animateMotion
+                    dur="6s"
+                    repeatCount="indefinite"
+                    keyPoints="0;1"
+                    keyTimes="0;1"
+                    calcMode="linear"
+                  >
+                    <mpath xlink:href="#borderPath" />
+                  </animateMotion>
+                  <!-- Leaf SVG: You can replace this with a more detailed leaf if you like -->
+                  <path
+                    d="M0 0 C2 6, 8 10, 12 0 C8 2, 2 -2, 0 0 Z"
+                    fill="#2ecc71"
+                    stroke="#27ae60"
+                    stroke-width="0.5"
+                    filter="url(#leafShadow)"
+                  />
+                </g>
+                <defs>
+                  <filter id="leafShadow" x="-5" y="-5" width="20" height="20">
+                    <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
+                  </filter>
+                </defs>
+              </svg>
+            </div>
+            <!-- Your glass panel content -->
+            <div class="kinetic-glass-panel text-center text-white p-8 md:p-14 w-full max-w-4xl mx-auto relative z-10">
+              <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy">
+                <span v-for="(word, index) in heroHeadlineWords" :key="index" class="inline-block" data-aos="fade-up" :data-aos-delay="200 + index * 150">{{ word }} </span>
+              </h1>
+              <p class="mt-6 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy mx-auto" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">
+                Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.
+              </p>
+            </div>
           </div>
         </div>
         <div class="absolute bottom-0 left-0 w-full h-1/4 z-10 bg-gradient-to-t from-gray-900 to-transparent"></div>
       </section>
 
       <main class="relative z-30 bg-gray-900 -mt-1">
-        <section id="leistungen" class="py-20">
-          <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-16 text-white" data-aos="fade-up">Unsere <span class="text-glow-green">Leistungen</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-              <div v-for="(service, index) in leistungen" :key="service.title" class="flex flex-col items-center text-center" data-aos="fade-up" :data-aos-delay="index * 150">
-                <div class="icon-container mb-6"><svg v-if="service.type === 'garten'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/><path class="path" d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/><path class="path" d="M12 11v5m0 0l-2-2m2 2l2-2"/></svg><svg v-if="service.type === 'haus'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M3 12l2-2m0 0l7-7 7 7"/><path class="path" d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><svg v-if="service.type === 'reinigung'" class="animated-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path class="path" d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/></svg></div>
-                <h3 class="text-2xl font-bold mb-3 text-white">{{ service.title }}</h3><p class="text-gray-400 leading-relaxed">{{ service.description }}</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <section id="leistungen" class="py-20 bg-black">
+  <div class="container mx-auto px-4">
+    <h2 
+      class="text-4xl font-bold text-center mb-16 text-white" 
+      data-aos="fade-up"
+    >
+      Unsere <span class="text-glow-green">Leistungen</span>
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+      <div
+        v-for="(service, index) in leistungen"
+        :key="service.title"
+        class="flex flex-col items-center text-center"
+        data-aos="fade-up"
+        :data-aos-delay="index * 150"
+      >
+        <div class="icon-container mb-6">
+          <!-- Garten Icon -->
+          <svg
+            v-if="service.type === 'garten'"
+            class="animated-icon"
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#2ecc71"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/>
+            <path d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/>
+            <path d="M12 11v5m0 0l-2-2m2 2l2-2"/>
+          </svg>
+
+          <!-- Haus Icon -->
+          <svg
+            v-else-if="service.type === 'haus'"
+            class="animated-icon"
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#2ecc71"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12l2-2m0 0l7-7 7 7"/>
+            <path d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+
+          <!-- Reinigung Icon -->
+          <svg
+            v-else-if="service.type === 'reinigung'"
+            class="animated-icon"
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#2ecc71"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/>
+          </svg>
+        </div>
+
+        <h3 class="text-2xl font-bold mb-3 text-white">
+          {{ service.title }}
+        </h3>
+        <p class="text-gray-400 leading-relaxed">
+          {{ service.description }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         <section id="informationen" class="py-20 section-bg"><div class="container mx-auto px-4 text-center" data-aos="fade-in"><h2 class="text-4xl font-bold text-center mb-4 text-white">Unsere <span class="text-glow-yellow">Philosophie</span></h2><p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"WIR PFLEGEN IHR HAUS, IHREN GARTEN, DIE INNENREINIGUNG IHRES ZUHAUSE UND IHRE UMWELT. WÄHLEN SIE UNS, WENN SIE EINE SAUBERE UMGEBUNG WOLLEN."</p></div></section>
         
@@ -156,40 +284,83 @@ onUnmounted(() => {
         <transition name="lightbox-fade">
           <div v-if="isGalleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 lightbox-backdrop" @click="closeGallery">
             <div class="relative z-10 w-full h-full flex items-center justify-center lightbox-container" @click.stop>
-              <div class="lightbox-image-wrapper w-[80vw] h-[80vh]">
-                <img :src="previousImage" class="lightbox-image prev" alt="Previous Image" v-if="galleryImages.length > 1">
+              <!-- Left Arrow -->
+              <button
+                @click.stop="prevImage"
+                class="absolute left-0 md:-left-16 top-1/2 -translate-y-1/2 z-20 p-3 lightbox-nav-button"
+                aria-label="Vorheriges Bild"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-10 md:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <!-- Image Wrapper -->
+              <div class="lightbox-image-wrapper w-[80vw] max-w-3xl h-[80vh] relative flex items-center justify-center">
                 <img :src="currentImage" class="lightbox-image current" alt="Current Image">
-                <img :src="nextImageSrc" class="lightbox-image next" alt="Next Image" v-if="galleryImages.length > 1">
+                <!-- Close button -->
+                <button
+                  @click="closeGallery"
+                  style="position: absolute; top: 1rem; right: 1rem; z-index: 30;"
+                  class="p-2 rounded-full bg-black/70 hover:bg-green-500 transition group"
+                  aria-label="Schließen"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white group-hover:text-[#2ecc71]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
+              <!-- Right Arrow -->
+              <button
+                @click.stop="nextImage"
+                class="absolute right-0 md:-right-16 top-1/2 -translate-y-1/2 z-20 p-3 lightbox-nav-button"
+                aria-label="Nächstes Bild"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-10 md:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
-            <button @click.stop="prevImage" class="absolute left-4 md:left-16 z-20 p-3 lightbox-nav-button"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-            <button @click.stop="nextImage" class="absolute right-4 md:right-16 z-20 p-3 lightbox-nav-button"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-            <button @click="closeGallery" class="absolute top-4 right-4 z-20 p-3 lightbox-nav-button hover:bg-red-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
           </div>
         </transition>
 
         <section id="contact" class="py-20 bg-gray-900">
           <div class="container mx-auto px-4">
-              <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Kontaktieren Sie <span class="text-glow-yellow">Uns</span></h2>
-              <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-800">
-                <div class="absolute inset-0 z-0">
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2726.883191316527!2d9.529851176883256!3d47.14259891823126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479b31179a6339a7%3A0x6a22f3d64a0349b1!2sHeiligkreuz%2034%2C%209490%20Vaduz%2C%20Liechtenstein!5e0!3m2!1sen!2sus!4v1687579979357!5m2!1sen!2sus" width="100%" height="100%" style="border:0; filter: grayscale(1) contrast(1.2) opacity(0.2);" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2">
-                  <div class="bg-gray-900/50 backdrop-blur-xl p-8 md:p-12">
-                    <h3 class="text-3xl font-bold text-white">Wir sind für Sie da</h3>
-                    <p class="text-gray-300 mt-2 mb-8">Senden Sie uns eine Nachricht oder besuchen Sie uns.</p>
-                    <div class="space-y-6">
-                      <div class="flex items-start"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-lg">{{ address }}</span></div>
-                      <div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><a href="mailto:morina.gartenpflege@gmail.com" class="text-lg hover:text-green-400 transition">morina.gartenpflege@gmail.com</a></div>
-                      <div class="flex items-center"><svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg><a href="tel:+41789262407" class="text-lg hover:text-green-400 transition">+41 78 926 24 07</a></div>
-                    </div>
+            <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">
+              Kontaktieren Sie <span class="text-glow-yellow">Uns</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+              <!-- Text Block -->
+              <div class="bg-gray-900/50 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl border border-gray-800 flex flex-col justify-center">
+                <h3 class="text-3xl font-bold text-white">Wir sind für Sie da</h3>
+                <p class="text-gray-300 mt-2 mb-8">Senden Sie uns eine Nachricht oder besuchen Sie uns.</p>
+                <div class="space-y-6">
+                  <div class="flex items-start">
+                    <svg class="w-6 h-6 text-green-400 mr-4 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="text-lg">{{ address }}</span>
                   </div>
-                  <div class="p-8 md:p-12">
-                    <!-- This side can contain a contact form in the future -->
+                  <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <a href="mailto:morina.gartenpflege@gmail.com" class="text-lg hover:text-green-400 transition">morina.gartenpflege@gmail.com</a>
+                  </div>
+                  <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-400 mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    <a href="tel:+41789262407" class="text-lg hover:text-green-400 transition">+41 78 926 24 07</a>
                   </div>
                 </div>
               </div>
+              <!-- Map Block -->
+              <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-800 min-h-[350px]">
+                <iframe
+                  src="https://www.google.com/maps?q=Heiligkreuz+34,+9490+Vaduz,+Liechtenstein&output=embed&t=k"
+                  width="100%"
+                  height="100%"
+                  style="border:0; min-height:350px;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -198,3 +369,10 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+
+<style>
+.parallax-section {
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
