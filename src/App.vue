@@ -12,7 +12,7 @@ const teamImageModules = import.meta.glob('@/assets/team/*.{jpg,jpeg}', { eager:
 const getImageUrl = (module) => module?.default || '';
 const findImageModule = (modules, name) => Object.keys(modules).find(p => p.includes(`/${name}.`));
 
-const address = ref('Heiligkreuz 34, 9490 Vaduz, Liechtenstein');
+const address = ref('Heiligkreuz 34');
 const swiperModules = [Autoplay, EffectFade];
 const heroContainer = ref(null);
 const parallax = ref({ rotateX: 0, rotateY: 0, bgPosX: '50%', bgPosY: '50%' });
@@ -31,9 +31,9 @@ const teamMembers = [
 const heroHeadline = "Natur. Präzision. Perfektion.";
 const heroHeadlineWords = computed(() => heroHeadline.split(' '));
 const leistungen = [
-  { title: 'Gartenunterhalt', description: 'Professionelle Pflege von Rasen, Hecken, Beeten und Bäumen für eine ganzjährig prächtige Grünanlage.', type: 'garten' },
-  { title: 'Hauswartung', description: 'Umfassende Betreuung Ihrer Immobilie, von kleinen Reparaturen bis zur Überwachung der Haustechnik.', type: 'haus' },
-  { title: 'Innenreinigung', description: 'Gründliche und zuverlässige Reinigung Ihrer Wohn- und Arbeitsräume für ein makelloses und hygienisches Zuhause.', type: 'reinigung' }
+  { title: 'Gartenunterhalt', description: 'Wir pflegen Ihren Garten mit Sorgfalt und Fachwissen – Rasen, Hecken, Beete, Bäume und Blumen. Vom Mähen bis zur Blütenpflege sorgen wir das ganze Jahr für eine gesunde, gepflegte und sehenswerte Grünanlage.', type: 'garten' },
+  { title: 'Hauswartung', description: 'Wir pflegen Ihr Zuhause mit Liebe zum Detail – von der gründlichen Innenreinigung bis zur gepflegten Außenumgebung. Wählen Sie uns, wenn Ihnen Sauberkeit, Ordnung und Wohlbefinden wichtig sind.', type: 'haus' },
+  { title: 'Innenreinigung', description: 'Gründliche und zuverlässige Reinigung Ihrer Wohn- und Arbeitsräume für eine saubere und hygienische Umgebung.', type: 'reinigung' }
 ];
 
 const openGallery = (index) => { activeImageIndex.value = index; isGalleryOpen.value = true; };
@@ -161,9 +161,18 @@ onUnmounted(() => {
             </div>
             <!-- Your glass panel content -->
             <div class="kinetic-glass-panel text-center text-white p-8 md:p-14 w-full max-w-4xl mx-auto relative z-10">
-              <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-tight tracking-tight text-shadow-heavy">
-                <span v-for="(word, index) in heroHeadlineWords" :key="index" class="inline-block" data-aos="fade-up" :data-aos-delay="200 + index * 150">{{ word }} </span>
+              <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold mb-6 text-white drop-shadow-lg tracking-tight" data-aos="fade-up" data-aos-delay="100">
+                MORINA Gmbh
               </h1>
+              <span
+                v-for="(word, index) in heroHeadlineWords"
+                :key="index"
+                class="inline-block text-2xl sm:text-3xl md:text-5xl font-semibold mb-2"
+                data-aos="fade-up"
+                :data-aos-delay="200 + index * 150"
+              >
+                {{ word }}&nbsp;
+              </span>
               <p class="mt-6 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy mx-auto" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">
                 Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.
               </p>
@@ -256,7 +265,7 @@ onUnmounted(() => {
 </section>
 
 
-        <section id="informationen" class="py-20 section-bg"><div class="container mx-auto px-4 text-center" data-aos="fade-in"><h2 class="text-4xl font-bold text-center mb-4 text-white">Unsere <span class="text-glow-yellow">Philosophie</span></h2><p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"WIR PFLEGEN IHR HAUS, IHREN GARTEN, DIE INNENREINIGUNG IHRES ZUHAUSE UND IHRE UMWELT. WÄHLEN SIE UNS, WENN SIE EINE SAUBERE UMGEBUNG WOLLEN."</p></div></section>
+        <section id="informationen" class="py-20 section-bg"><div class="container mx-auto px-4 text-center" data-aos="fade-in"><h2 class="text-4xl font-bold text-center mb-4 text-white">Unser <span class="text-glow-yellow">Versprechen</span></h2><p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">Für ein sauberes, gepflegtes Zuhause, in dem man sich wohlfühlt. Verlassen Sie sich auf unser Team für eine Umgebung, in der Natur und Ästhetik im Einklang sind. Zuverlässigkeit, Präzision und ein Auge fürs Detail – ob Reinigung oder Gartenarbeit: Wir machen’s mit Herz und Verstand.</p></div></section>
         
         <section id="team" class="py-20 bg-gray-900">
             <div class="container mx-auto px-4">
@@ -272,11 +281,18 @@ onUnmounted(() => {
         <section id="gallery" class="py-20 section-bg">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="(image, index) in galleryImages" :key="`gallery-${index}`" class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg gallery-item" :data-aos="'zoom-in-up'" :data-aos-delay="(index % 3) * 100" @click="openGallery(index)">
-                        <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110">
-                    </div>
-                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+  <div
+    v-for="(image, index) in galleryImages"
+    :key="`gallery-${index}`"
+    class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg gallery-item"
+    :data-aos="'zoom-in-up'"
+    :data-aos-delay="(index % 3) * 100"
+    @click="openGallery(index)"
+  >
+    <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110" />
+  </div>
+</div>
             </div>
         </section>
 
@@ -295,8 +311,8 @@ onUnmounted(() => {
                 </svg>
               </button>
               <!-- Image Wrapper -->
-              <div class="lightbox-image-wrapper w-[80vw] max-w-3xl h-[80vh] relative flex items-center justify-center">
-                <img :src="currentImage" class="lightbox-image current" alt="Current Image">
+              <div class="lightbox-image-wrapper w-[96vw] max-w-3xl h-[60vh] sm:w-[80vw] sm:h-[80vh] relative flex items-center justify-center">
+                <img :src="currentImage" class="lightbox-image current max-w-full max-h-full object-contain rounded-lg" alt="Current Image">
                 <!-- Close button -->
                 <button
                   @click="closeGallery"
@@ -351,7 +367,7 @@ onUnmounted(() => {
               <!-- Map Block -->
               <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-800 min-h-[350px]">
                 <iframe
-                  src="https://www.google.com/maps?q=Heiligkreuz+34,+9490+Vaduz,+Liechtenstein&output=embed&t=k"
+                  src="https://www.google.com/maps?q=Heiligkreuz+34&output=embed&t=k"
                   width="100%"
                   height="100%"
                   style="border:0; min-height:350px;"

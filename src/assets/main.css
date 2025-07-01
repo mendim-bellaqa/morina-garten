@@ -213,19 +213,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  width: 96vw;
+  height: 60vh;
+  max-width: 700px;
+  max-height: 80vh;
   background: transparent;
 }
 
+@media (min-width: 640px) {
+  .lightbox-image-wrapper {
+    width: 80vw;
+    height: 80vh;
+  }
+}
+
 .lightbox-image {
-  max-width: 90vw;
-  max-height: 80vh;
-  width: auto;
-  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   border-radius: 0.5rem;
   display: block;
-  background: transparent;
 }
 
 .lightbox-image.current {
