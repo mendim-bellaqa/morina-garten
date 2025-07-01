@@ -12,7 +12,7 @@ const teamImageModules = import.meta.glob('@/assets/team/*.{jpg,jpeg}', { eager:
 const getImageUrl = (module) => module?.default || '';
 const findImageModule = (modules, name) => Object.keys(modules).find(p => p.includes(`/${name}.`));
 
-const address = ref('Heiligkreuz 34');
+const address = ref('Heiligkreuz 36, Vaduz, Liechtenstein');
 const swiperModules = [Autoplay, EffectFade];
 const heroContainer = ref(null);
 const parallax = ref({ rotateX: 0, rotateY: 0, bgPosX: '50%', bgPosY: '50%' });
@@ -367,7 +367,7 @@ onUnmounted(() => {
               <!-- Map Block -->
               <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-800 min-h-[350px]">
                 <iframe
-                  src="https://www.google.com/maps?q=Heiligkreuz+34&output=embed&t=k"
+                  src="https://www.google.com/maps?q=Heiligkreuz+36&output=embed&t=k"
                   width="100%"
                   height="100%"
                   style="border:0; min-height:350px;"
