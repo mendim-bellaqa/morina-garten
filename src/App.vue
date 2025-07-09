@@ -25,7 +25,7 @@ const heroImages = ref(Object.values(galleryImageModules).map(getImageUrl));
 const galleryImages = computed(() => Object.values(galleryImageModules).map(module => ({ src: getImageUrl(module), alt: 'Professionelle Gartenarbeit' })));
 const teamMembers = [
     { name: 'Morina Jeton', role: 'Inhaber & Geschäftsführer', imageSrc: getImageUrl(teamImageModules[findImageModule(teamImageModules, '1')]) },
-    { name: 'Kriss', role: 'Spezialist für Gartenunterhalt', imageSrc: getImageUrl(teamImageModules[findImageModule(teamImageModules, '2')]) },
+    { name: 'Christoph Mix', role: 'Spezialist für Gartenunterhalt', imageSrc: getImageUrl(teamImageModules[findImageModule(teamImageModules, '2')]) },
     { name: 'Morina Shkurta', role: 'Expertin für Hauswartungen', imageSrc: getImageUrl(teamImageModules[findImageModule(teamImageModules, '3')]) },
 ];
 const heroHeadline = "Natur. Präzision. Perfektion.";
@@ -112,6 +112,39 @@ onUnmounted(() => {
 
     <div class="relative">
       <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black" style="perspective: 1000px;">
+        <!-- Place the falling leaves here, right after header and before hero content -->
+        <div class="falling-leaves pointer-events-none absolute inset-0 z-30">
+          <svg v-for="n in 8" :key="'leaf'+n"
+            class="falling-leaf"
+            :style="{
+              left: `${Math.random() * 95}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${7 + Math.random() * 4}s`,
+              width: `${32 + Math.random() * 24}px`
+            }"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path d="M12 2C15 8 22 8 22 14C22 20 12 22 12 22C12 22 2 20 2 14C2 8 9 8 12 2Z" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
+          </svg>
+          <svg v-for="n in 4" :key="'flower'+n"
+            class="falling-flower"
+            :style="{
+              left: `${Math.random() * 95}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${8 + Math.random() * 5}s`,
+              width: `${24 + Math.random() * 16}px`
+            }"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle cx="12" cy="12" r="4" fill="#f1c40f"/>
+            <ellipse cx="12" cy="6" rx="2" ry="4" fill="#fff176"/>
+            <ellipse cx="12" cy="18" rx="2" ry="4" fill="#fff176"/>
+            <ellipse cx="6" cy="12" rx="4" ry="2" fill="#fff176"/>
+            <ellipse cx="18" cy="12" rx="4" ry="2" fill="#fff176"/>
+          </svg>
+        </div>
         <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
           <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
             <div class="w-full h-full bg-cover bg-center transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})` }"></div>
@@ -141,7 +174,7 @@ onUnmounted(() => {
                     keyTimes="0;1"
                     calcMode="linear"
                   >
-                    <mpath xlink:href="#borderPath" />
+                    <mpath xliWnk:href="#borderPath" />
                   </animateMotion>
                   <!-- Leaf SVG: You can replace this with a more detailed leaf if you like -->
                   <path
@@ -161,9 +194,13 @@ onUnmounted(() => {
             </div>
             <!-- Your glass panel content -->
             <div class="kinetic-glass-panel text-center text-white p-8 md:p-14 w-full max-w-4xl mx-auto relative z-10">
-              <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold mb-6 text-white drop-shadow-lg tracking-tight" data-aos="fade-up" data-aos-delay="100">
-                MORINA Gmbh
-              </h1>
+              <h1
+  class="text-3xl sm:text-5xl md:text-8xl font-extrabold mb-6 text-white drop-shadow-lg tracking-tight whitespace-nowrap bg-gradient-to-r from-green-400 via-white to-green-400 bg-clip-text text-transparent animate-gradient-move"
+  data-aos="fade-up"
+  data-aos-delay="100"
+>
+  MORINA Gmbh
+</h1>
               <span
                 v-for="(word, index) in heroHeadlineWords"
                 :key="index"
