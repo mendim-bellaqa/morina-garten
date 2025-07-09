@@ -12,7 +12,7 @@ const teamImageModules = import.meta.glob('@/assets/team/*.{jpg,jpeg}', { eager:
 const getImageUrl = (module) => module?.default || '';
 const findImageModule = (modules, name) => Object.keys(modules).find(p => p.includes(`/${name}.`));
 
-const address = ref('Heiligkreuz 36, Vaduz, Liechtenstein');
+const address = ref('Heiligkreuz 36 9490 Vaduz, Liechtenstein');
 const swiperModules = [Autoplay, EffectFade];
 const heroContainer = ref(null);
 const parallax = ref({ rotateX: 0, rotateY: 0, bgPosX: '50%', bgPosY: '50%' });
@@ -111,198 +111,178 @@ onUnmounted(() => {
     </transition>
 
     <div class="relative">
-      <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black" style="perspective: 1000px;">
-        <!-- Place the falling leaves here, right after header and before hero content -->
-        <div class="falling-leaves pointer-events-none absolute inset-0 z-30">
-          <svg v-for="n in 8" :key="'leaf'+n"
-            class="falling-leaf"
-            :style="{
-              left: `${Math.random() * 95}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${7 + Math.random() * 4}s`,
-              width: `${32 + Math.random() * 24}px`
-            }"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path d="M12 2C15 8 22 8 22 14C22 20 12 22 12 22C12 22 2 20 2 14C2 8 9 8 12 2Z" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
-          </svg>
-          <svg v-for="n in 4" :key="'flower'+n"
-            class="falling-flower"
-            :style="{
-              left: `${Math.random() * 95}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${8 + Math.random() * 5}s`,
-              width: `${24 + Math.random() * 16}px`
-            }"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <circle cx="12" cy="12" r="4" fill="#f1c40f"/>
-            <ellipse cx="12" cy="6" rx="2" ry="4" fill="#fff176"/>
-            <ellipse cx="12" cy="18" rx="2" ry="4" fill="#fff176"/>
-            <ellipse cx="6" cy="12" rx="4" ry="2" fill="#fff176"/>
-            <ellipse cx="18" cy="12" rx="4" ry="2" fill="#fff176"/>
-          </svg>
-        </div>
-        <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
-          <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
-            <div class="w-full h-full bg-cover bg-center transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})` }"></div>
-          </swiper-slide>
-        </swiper>
-        <div class="aurora-container"><div class="aurora-blob one"></div><div class="aurora-blob two"></div><div class="aurora-blob three"></div></div>
-        <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
-          <div class="glossy-border relative">
-            <!-- Animated Leaf SVG (see below) -->
-            <div class="leaf-anim-container pointer-events-none">
-              <svg
-                class="leaf-anim"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  id="borderPath"
-                  d="M10,10 H90 V90 H10 Z"
-                  fill="none"
-                />
-                <g>
-                  <animateMotion
-                    dur="6s"
-                    repeatCount="indefinite"
-                    keyPoints="0;1"
-                    keyTimes="0;1"
-                    calcMode="linear"
-                  >
-                    <mpath xliWnk:href="#borderPath" />
-                  </animateMotion>
-                  <!-- Leaf SVG: You can replace this with a more detailed leaf if you like -->
-                  <path
-                    d="M0 0 C2 6, 8 10, 12 0 C8 2, 2 -2, 0 0 Z"
-                    fill="#2ecc71"
-                    stroke="#27ae60"
-                    stroke-width="0.5"
-                    filter="url(#leafShadow)"
-                  />
-                </g>
-                <defs>
-                  <filter id="leafShadow" x="-5" y="-5" width="20" height="20">
-                    <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
-                  </filter>
-                </defs>
-              </svg>
-            </div>
-            <!-- Your glass panel content -->
-            <div class="kinetic-glass-panel text-center text-white p-8 md:p-14 w-full max-w-4xl mx-auto relative z-10">
-              <h1
-  class="text-3xl sm:text-5xl md:text-8xl font-extrabold mb-6 text-white drop-shadow-lg tracking-tight whitespace-nowrap bg-gradient-to-r from-green-400 via-white to-green-400 bg-clip-text text-transparent animate-gradient-move"
-  data-aos="fade-up"
-  data-aos-delay="100"
->
-  MORINA Gmbh
-</h1>
-              <span
-                v-for="(word, index) in heroHeadlineWords"
-                :key="index"
-                class="inline-block text-2xl sm:text-3xl md:text-5xl font-semibold mb-2"
-                data-aos="fade-up"
-                :data-aos-delay="200 + index * 150"
-              >
-                {{ word }}&nbsp;
-              </span>
-              <p class="mt-6 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl text-shadow-heavy mx-auto" data-aos="fade-up" :data-aos-delay="200 + heroHeadlineWords.length * 150">
-                Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="absolute bottom-0 left-0 w-full h-1/4 z-10 bg-gradient-to-t from-gray-900 to-transparent"></div>
-      </section>
 
-      <main class="relative z-30 bg-gray-900 -mt-1">
-        <section id="leistungen" class="py-20 bg-black">
-  <div class="container mx-auto px-4">
-    <h2 
-      class="text-4xl font-bold text-center mb-16 text-white" 
-      data-aos="fade-up"
+      <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black flex items-center justify-center" style="perspective: 1000px;">
+  <!-- Falling leaves background elements -->
+  <div class="falling-leaves pointer-events-none absolute inset-0 z-10">
+    <!-- Detailed leaves -->
+    <svg v-for="n in 10" :key="'leaf'+n"
+      class="falling-leaf"
+      :style="{
+        left: `${Math.random() * 95}%`,
+        animationDelay: `${Math.random() * 8}s`,
+        animationDuration: `${7 + Math.random() * 4}s`,
+        width: `${32 + Math.random() * 24}px`
+      }"
+      viewBox="0 0 100 100"
+      fill="none"
     >
-      Unsere <span class="text-glow-green">Leistungen</span>
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-      <div
-        v-for="(service, index) in leistungen"
-        :key="service.title"
-        class="flex flex-col items-center text-center"
-        data-aos="fade-up"
-        :data-aos-delay="index * 150"
-      >
-        <div class="icon-container mb-6">
-          <!-- Garten Icon -->
-          <svg
-            v-if="service.type === 'garten'"
-            class="animated-icon"
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#2ecc71"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/>
-            <path d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/>
-            <path d="M12 11v5m0 0l-2-2m2 2l2-2"/>
-          </svg>
-
-          <!-- Haus Icon -->
-          <svg
-            v-else-if="service.type === 'haus'"
-            class="animated-icon"
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#2ecc71"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M3 12l2-2m0 0l7-7 7 7"/>
-            <path d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-          </svg>
-
-          <!-- Reinigung Icon -->
-          <svg
-            v-else-if="service.type === 'reinigung'"
-            class="animated-icon"
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#2ecc71"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/>
-          </svg>
-        </div>
-
-        <h3 class="text-2xl font-bold mb-3 text-white">
-          {{ service.title }}
-        </h3>
-        <p class="text-gray-400 leading-relaxed">
-          {{ service.description }}
+      <path d="M50 10C60 30 80 35 80 50C80 70 50 85 50 85C50 85 20 70 20 50C20 35 40 30 50 10Z" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+      <path d="M50 30C55 40 65 45 65 50" stroke="#1e8449" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    
+    <!-- Maple leaves -->
+    <svg v-for="n in 6" :key="'maple'+n"
+      class="falling-leaf"
+      :style="{
+        left: `${Math.random() * 95}%`,
+        animationDelay: `${Math.random() * 6}s`,
+        animationDuration: `${6 + Math.random() * 5}s`,
+        width: `${40 + Math.random() * 20}px`
+      }"
+      viewBox="0 0 100 100"
+      fill="none"
+    >
+      <path d="M50 10C55 25 70 20 70 30C70 40 60 45 50 60C40 45 30 40 30 30C30 20 45 25 50 10Z" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>
+      <path d="M50 60L50 85" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    
+    <!-- Colorful flowers -->
+    <svg v-for="n in 8" :key="'flower'+n"
+      class="falling-flower"
+      :style="{
+        left: `${Math.random() * 95}%`,
+        animationDelay: `${Math.random() * 10}s`,
+        animationDuration: `${8 + Math.random() * 5}s`,
+        width: `${24 + Math.random() * 16}px`
+      }"
+      viewBox="0 0 100 100"
+      fill="none"
+    >
+      <circle cx="50" cy="50" r="15" :fill="n % 3 === 0 ? '#f1c40f' : n % 3 === 1 ? '#e74c3c' : '#ffffff'"/>
+      <ellipse cx="50" cy="20" rx="10" ry="15" fill="#ffffff" opacity="0.8"/>
+      <ellipse cx="50" cy="80" rx="10" ry="15" fill="#ffffff" opacity="0.8"/>
+      <ellipse cx="20" cy="50" rx="15" ry="10" fill="#ffffff" opacity="0.8"/>
+      <ellipse cx="80" cy="50" rx="15" ry="10" fill="#ffffff" opacity="0.8"/>
+      <circle cx="50" cy="50" r="8" fill="#2ecc71"/>
+    </svg>
+  </div>
+  
+  <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
+    <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
+      <div class="w-full h-full bg-cover bg-center transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})` }"></div>
+    </swiper-slide>
+  </swiper>
+  
+  <div class="aurora-container">
+    <div class="aurora-blob one"></div>
+    <div class="aurora-blob two"></div>
+    <div class="aurora-blob three"></div>
+  </div>
+  
+  <!-- Centered glass box -->
+  <div class="absolute inset-0 z-20 flex items-center justify-center p-4" style="transform-style: preserve-3d;">
+    <div class="glass-box-container relative w-full max-w-4xl mx-auto">
+      <div class="glass-box-content text-center text-white p-8 md:p-12">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white tracking-tight">
+          MORINA GmbH
+        </h1>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6">
+          Natur. Präzision. Perfektion.
+        </h2>
+        <p class="text-lg sm:text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">
+          Ihr Experte für eine makellose und gepflegte Umgebung in Liechtenstein und Umgebung.
         </p>
       </div>
     </div>
   </div>
+  
+  <div class="absolute bottom-0 left-0 w-full h-1/4 z-10 bg-gradient-to-t from-gray-900 to-transparent"></div>
 </section>
 
+      <main class="relative z-30 bg-gray-900 -mt-1">
+        <section id="leistungen" class="py-20 bg-black">
+          <div class="container mx-auto px-4">
+            <h2 
+              class="text-4xl font-bold text-center mb-16 text-white" 
+              data-aos="fade-up"
+            >
+              Unsere <span class="text-glow-green">Leistungen</span>
+            </h2>
 
-        <section id="informationen" class="py-20 section-bg"><div class="container mx-auto px-4 text-center" data-aos="fade-in"><h2 class="text-4xl font-bold text-center mb-4 text-white">Unser <span class="text-glow-yellow">Versprechen</span></h2><p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">Für ein sauberes, gepflegtes Zuhause, in dem man sich wohlfühlt. Verlassen Sie sich auf unser Team für eine Umgebung, in der Natur und Ästhetik im Einklang sind. Zuverlässigkeit, Präzision und ein Auge fürs Detail – ob Reinigung oder Gartenarbeit: Wir machen’s mit Herz und Verstand.</p></div></section>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+              <div
+                v-for="(service, index) in leistungen"
+                :key="service.title"
+                class="flex flex-col items-center text-center"
+                data-aos="fade-up"
+                :data-aos-delay="index * 150"
+              >
+                <div class="icon-container mb-6">
+                  <!-- Garten Icon -->
+                  <svg
+                    v-if="service.type === 'garten'"
+                    class="animated-icon"
+                    width="80"
+                    height="80"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#2ecc71"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945"/>
+                    <path d="M7.688 3.688A1.5 1.5 0 018.25 3h7.5a1.5 1.5 0 011.063.438l3.688 3.688a1.5 1.5 0 01.438 1.062v7.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-7.5a1.5 1.5 0 01.438-1.062l3.688-3.688z"/>
+                    <path d="M12 11v5m0 0l-2-2m2 2l2-2"/>
+                  </svg>
+
+                  <!-- Haus Icon -->
+                  <svg
+                    v-else-if="service.type === 'haus'"
+                    class="animated-icon"
+                    width="80"
+                    height="80"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#2ecc71"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 12l2-2m0 0l7-7 7 7"/>
+                    <path d="M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+
+                  <!-- Reinigung Icon -->
+                  <svg
+                    v-else-if="service.type === 'reinigung'"
+                    class="animated-icon"
+                    width="80"
+                    height="80"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#2ecc71"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 3v4M3 5h4m-1 9v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M5 3l14 18"/>
+                  </svg>
+                </div>
+
+                <h3 class="text-2xl font-bold mb-3 text-white">
+                  {{ service.title }}
+                </h3>
+                <p class="text-gray-400 leading-relaxed">
+                  {{ service.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="informationen" class="py-20 section-bg"><div class="container mx-auto px-4 text-center" data-aos="fade-in"><h2 class="text-4xl font-bold text-center mb-4 text-white">Unser <span class="text-glow-yellow">Versprechen</span></h2><p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">Für ein sauberes, gepflegtes Zuhause, in dem man sich wohlfühlt. Verlassen Sie sich auf unser Team für eine Umgebung, in der Natur und Ästhetik im Einklang sind. Zuverlässigkeit, Präzision und ein Auge fürs Detail – ob Reinigung oder Gartenarbeit: Wir machen's mit Herz und Verstand.</p></div></section>
         
         <section id="team" class="py-20 bg-gray-900">
             <div class="container mx-auto px-4">
@@ -316,23 +296,28 @@ onUnmounted(() => {
         </section>
 
         <section id="gallery" class="py-20 section-bg">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
-                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-  <div
-    v-for="(image, index) in galleryImages"
-    :key="`gallery-${index}`"
-    class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg gallery-item"
-    :data-aos="'zoom-in-up'"
-    :data-aos-delay="(index % 3) * 100"
-    @click="openGallery(index)"
-  >
-    <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transition duration-500 ease-in-out transform hover:scale-110" />
-  </div>
-</div>
+          <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-white" data-aos="fade-up">Visuelle <span class="text-glow-green">Impressionen</span></h2>
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+              <div
+                v-for="(image, index) in galleryImages"
+                :key="`gallery-${index}`"
+                class="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg gallery-item cursor-pointer"
+                :data-aos="'zoom-in-up'"
+                :data-aos-delay="(index % 3) * 100"
+                @click="openGallery(index)"
+              >
+                <img 
+                  :src="image.src" 
+                  :alt="image.alt" 
+                  class="w-full h-full object-cover transition duration-300 ease-in-out hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
             </div>
+          </div>
         </section>
-
+``
         <!-- Crystalline Gallery Lightbox -->
         <transition name="lightbox-fade">
           <div v-if="isGalleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 lightbox-backdrop" @click="closeGallery">
@@ -422,10 +407,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<style>
-.parallax-section {
-  background-size: cover;
-  background-attachment: fixed;
-}
-</style>
