@@ -20,6 +20,8 @@ const isMobileMenuOpen = ref(false);
 const isScrolledPastHero = ref(false);
 const isGalleryOpen = ref(false);
 const activeImageIndex = ref(0);
+const isTeamModalOpen = ref(false);
+const selectedTeamMember = ref(null);
 
 const heroImages = ref(Object.values(galleryImageModules).map(getImageUrl));
 const galleryImages = computed(() => Object.values(galleryImageModules).map(module => ({ src: getImageUrl(module), alt: 'Professionelle Gartenarbeit' })));
@@ -38,6 +40,15 @@ const leistungen = [
 
 const openGallery = (index) => { activeImageIndex.value = index; isGalleryOpen.value = true; };
 const closeGallery = () => { isGalleryOpen.value = false; };
+
+const openTeamModal = (member) => {
+  selectedTeamMember.value = member;
+  isTeamModalOpen.value = true;
+};
+const closeTeamModal = () => {
+  isTeamModalOpen.value = false;
+  selectedTeamMember.value = null;
+};
 const nextImage = () => { activeImageIndex.value = (activeImageIndex.value + 1) % galleryImages.value.length; };
 const prevImage = () => { activeImageIndex.value = (activeImageIndex.value - 1 + galleryImages.value.length) % galleryImages.value.length; };
 const currentImage = computed(() => galleryImages.value[activeImageIndex.value]?.src);
@@ -54,8 +65,18 @@ const handleMouseMove = (event) => {
   parallax.value = { rotateX: -y * maxRotate, rotateY: x * maxRotate, bgPosX: (50 + x * 5) + '%', bgPosY: (50 + y * 5) + '%' };
 };
 const handleScroll = () => { isScrolledPastHero.value = window.scrollY > 50; };
-const handleKeydown = (e) => { if (isGalleryOpen.value) { if (e.key === 'Escape') closeGallery(); if (e.key === 'ArrowLeft') prevImage(); if (e.key === 'ArrowRight') nextImage(); } };
+const handleKeydown = (e) => {
+  if (isGalleryOpen.value) {
+    if (e.key === 'Escape') closeGallery();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+  }
+  if (isTeamModalOpen.value) {
+    if (e.key === 'Escape') closeTeamModal();
+  }
+};
 watch(isGalleryOpen, (newVal) => { document.body.style.overflow = newVal ? 'hidden' : ''; });
+watch(isTeamModalOpen, (newVal) => { document.body.style.overflow = newVal ? 'hidden' : ''; });
 watch(isMobileMenuOpen, (newVal) => { document.body.style.overflow = newVal ? 'hidden' : ''; });
 onMounted(() => {
   AOS.init({ once: true, duration: 1000, easing: 'ease-out-cubic', offset: 50 });
