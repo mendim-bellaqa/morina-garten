@@ -134,61 +134,7 @@ onUnmounted(() => {
     <div class="relative">
 
       <section id="home" ref="heroContainer" class="h-screen w-full relative overflow-hidden bg-black flex items-center justify-center" style="perspective: 1000px;">
-  <!-- Falling leaves background elements -->
-  <div class="falling-leaves pointer-events-none absolute inset-0 z-10">
-    <!-- Detailed leaves -->
-    <svg v-for="n in 10" :key="'leaf'+n"
-      class="falling-leaf"
-      :style="{
-        left: `${Math.random() * 95}%`,
-        animationDelay: `${Math.random() * 8}s`,
-        animationDuration: `${7 + Math.random() * 4}s`,
-        width: `${32 + Math.random() * 24}px`
-      }"
-      viewBox="0 0 100 100"
-      fill="none"
-    >
-      <path d="M50 10C60 30 80 35 80 50C80 70 50 85 50 85C50 85 20 70 20 50C20 35 40 30 50 10Z" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
-      <path d="M50 30C55 40 65 45 65 50" stroke="#1e8449" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    
-    <!-- Maple leaves -->
-    <svg v-for="n in 6" :key="'maple'+n"
-      class="falling-leaf"
-      :style="{
-        left: `${Math.random() * 95}%`,
-        animationDelay: `${Math.random() * 6}s`,
-        animationDuration: `${6 + Math.random() * 5}s`,
-        width: `${40 + Math.random() * 20}px`
-      }"
-      viewBox="0 0 100 100"
-      fill="none"
-    >
-      <path d="M50 10C55 25 70 20 70 30C70 40 60 45 50 60C40 45 30 40 30 30C30 20 45 25 50 10Z" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>
-      <path d="M50 60L50 85" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    
-    <!-- Colorful flowers -->
-    <svg v-for="n in 8" :key="'flower'+n"
-      class="falling-flower"
-      :style="{
-        left: `${Math.random() * 95}%`,
-        animationDelay: `${Math.random() * 10}s`,
-        animationDuration: `${8 + Math.random() * 5}s`,
-        width: `${24 + Math.random() * 16}px`
-      }"
-      viewBox="0 0 100 100"
-      fill="none"
-    >
-      <circle cx="50" cy="50" r="15" :fill="n % 3 === 0 ? '#f1c40f' : n % 3 === 1 ? '#e74c3c' : '#ffffff'"/>
-      <ellipse cx="50" cy="20" rx="10" ry="15" fill="#ffffff" opacity="0.8"/>
-      <ellipse cx="50" cy="80" rx="10" ry="15" fill="#ffffff" opacity="0.8"/>
-      <ellipse cx="20" cy="50" rx="15" ry="10" fill="#ffffff" opacity="0.8"/>
-      <ellipse cx="80" cy="50" rx="15" ry="10" fill="#ffffff" opacity="0.8"/>
-      <circle cx="50" cy="50" r="8" fill="#2ecc71"/>
-    </svg>
-  </div>
-  
+ 
   <swiper :modules="swiperModules" :loop="true" :effect="'fade'" :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }" class="absolute inset-0 z-0 w-full h-full">
     <swiper-slide v-for="(image, index) in heroImages" :key="`hero-${index}`">
       <div class="w-full h-full bg-cover bg-center transition-all duration-300 ease-out" :style="{ backgroundImage: `url(${image})` }"></div>
@@ -338,7 +284,7 @@ onUnmounted(() => {
             </div>
           </div>
         </section>
-``
+
         <!-- Crystalline Gallery Lightbox -->
         <transition name="lightbox-fade">
           <div v-if="isGalleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 lightbox-backdrop" @click="closeGallery">
